@@ -1,0 +1,13 @@
+package lushin;
+
+public class DriverClass {
+
+    public static void main(String[] args) throws Exception {
+        // Index the documents.
+        IndexingClass.main(args);
+
+        // Search the index.
+        SearchingClass.main(args);
+    }
+}
+

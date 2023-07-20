@@ -1,0 +1,3 @@
+module LUSHIN {
+	requires org.apache.lucene.core;
+}
