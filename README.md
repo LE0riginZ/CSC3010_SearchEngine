@@ -11,6 +11,7 @@ READ THIS BEFORE TRYING TO RUN ANYTHING, DONT RUN ALR TELL ME IT DOESNT WORK COS
 
 ### 1. Lucene Project
 Current working version but Lucene 3.6.2 is too outdated
+
 full tutorial: https://www.tutorialspoint.com/lucene/lucene_environment.htm
 
 1. Lucene 3.6.2 from https://archive.apache.org/dist/lucene/java/
