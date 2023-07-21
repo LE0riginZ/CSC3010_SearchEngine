@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SearchController {
 	
-	private final SearchService searchService;
+	private SearchService searchService;
 	
 	@GetMapping(value = "/page")
 	private ResponseEntity<List<String>> getAllProjects(@RequestParam(defaultValue = "") String searchTerm){

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.SortedDocValuesField;
@@ -24,14 +25,19 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
+import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
+@Component
 public class Indexing {
 	
 	private Directory memoryIndex;
-	private Analyzer analyzer;
+	private StandardAnalyzer analyzer;
+	
+	public Indexing(Directory memoryIndex, StandardAnalyzer analyzer) {
+        super();
+        this.memoryIndex = memoryIndex;
+        this.analyzer = analyzer;
+    }
 		
 	/**
      * 

@@ -25,7 +25,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LuceneFileSearch {
 	private Directory indexDirectory;
     private StandardAnalyzer analyzer;
