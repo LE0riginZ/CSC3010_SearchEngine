@@ -9,13 +9,9 @@ READ THIS BEFORE TRYING TO RUN ANYTHING, DONT RUN ALR TELL ME IT DOESNT WORK COS
 
 1. Abadi's Crawled data
 
-### 1. Lucene Project
-Current working version but Lucene 3.6.2 is too outdated
+### 1. Lucene tied with Spring Boot Project (9.7.0)
 
-full tutorial: https://www.tutorialspoint.com/lucene/lucene_environment.htm
+Files to touch for (Indexers and Search Functionalities):
+1. com.project.lucene -> RunIndexer.java
+2. com.project.lucene.util -> Indexing.java and LuceneFileSearch.java
 
-1. Lucene 3.6.2 from https://archive.apache.org/dist/lucene/java/
-2. Import lucene-core-3.6.2.jar into eclipse project modulepath
-
-### 2. LUSHIN
-WIP Lucene 9.7.0 version don't need to touch yet 
