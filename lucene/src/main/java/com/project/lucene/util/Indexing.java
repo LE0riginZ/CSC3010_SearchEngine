@@ -25,6 +25,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,7 +34,7 @@ public class Indexing {
 	private Directory memoryIndex;
 	private StandardAnalyzer analyzer;
 	
-	public Indexing(Directory memoryIndex, StandardAnalyzer analyzer) {
+	public Indexing(@Qualifier("indexDirectory") Directory memoryIndex, StandardAnalyzer analyzer) {
         super();
         this.memoryIndex = memoryIndex;
         this.analyzer = analyzer;
@@ -44,7 +45,7 @@ public class Indexing {
      * @param title
      * @param body
      */
-    public void indexDocument(String title, String body) {
+    public void indexDocument(String title, String body, String url) {
 
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         try {
@@ -53,6 +54,7 @@ public class Indexing {
 
             document.add(new TextField("title", title, Field.Store.YES));
             document.add(new TextField("body", body, Field.Store.YES));
+            document.add(new TextField("url", url, Field.Store.YES));
             document.add(new SortedDocValuesField("title", new BytesRef(title)));
 
             writter.addDocument(document);

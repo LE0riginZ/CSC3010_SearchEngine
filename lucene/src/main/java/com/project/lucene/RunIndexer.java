@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.project.lucene.model.DocumentItem;
 import com.project.lucene.util.Indexing;
 import com.project.lucene.util.LuceneFileSearch;
-import com.project.lucene.util.YourClassName;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
@@ -30,13 +30,26 @@ public class RunIndexer implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
+		String filePath = "../data_directory/data.json";
 
 		
 //		indexing.indexDocument("This is a title", "Test");
 //		indexing.indexDocument("This is a test", "Title");
-		List<Document> testList = indexing.searchIndex("title", "test");
+//		List<Document> testList = indexing.searchIndex("title", "test");
+//		
+//		System.out.println(testList);
 		
-		System.out.println(testList);
+		// Read in JSON file as a list of documents
+		List<DocumentItem> documentsList = readJsonFileAndParse(filePath);
+		
+		
+		// Iterate through list of documents and index 
+		for(DocumentItem item: documentsList) {
+			System.out.println(item.title);
+			indexing.indexDocument(item.title, item.content ,item.url);
+		}
+		
+		List<Document> testList = indexing.searchIndex("title", "test");
 		
 	}
 	

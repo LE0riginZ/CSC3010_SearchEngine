@@ -25,6 +25,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,7 +33,7 @@ public class LuceneFileSearch {
 	private Directory indexDirectory;
     private StandardAnalyzer analyzer;
 
-    public LuceneFileSearch(Directory fsDirectory, StandardAnalyzer analyzer) {
+    public LuceneFileSearch(@Qualifier("indexDirectory")Directory fsDirectory, StandardAnalyzer analyzer) {
         super();
         this.indexDirectory = fsDirectory;
         this.analyzer = analyzer;
