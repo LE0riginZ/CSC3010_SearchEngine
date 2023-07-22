@@ -22,9 +22,9 @@ public class SearchController {
 	@GetMapping(value = "/page")
 	private ResponseEntity<ResultItem> searchResults(
 			@RequestParam(defaultValue = "") String searchTerm, 
-			@RequestParam(defaultValue = "1") Integer pageNo, 
+			@RequestParam(defaultValue = "1") Integer pageNum, 
             @RequestParam(defaultValue = "3") Integer pageSize){
-		return new ResponseEntity<>(searchService.retrieveSearchResults(searchTerm, pageNo, pageSize),
+		return new ResponseEntity<>(searchService.retrieveSearchResults(searchTerm, pageNum, pageSize),
 				HttpStatus.OK);
 	}
 	
