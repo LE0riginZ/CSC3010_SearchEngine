@@ -1,7 +1,7 @@
 package com.project.lucene.service;
 
-import java.util.List;
+import com.project.lucene.model.ResultItem;
 
 public interface SearchService {
-	public List<String> retrieveSearchResults(String searchTerm);
+	public ResultItem retrieveSearchResults(String searchTerm, Integer pageNum, Integer pageSize);
 }

@@ -13,4 +13,6 @@ public class DocumentItem {
     public String content;
     public String url;
 
+    
+    
 }

@@ -28,6 +28,9 @@ import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.project.lucene.model.DocumentItem;
+import com.project.lucene.model.ResultItem;
+
 @Component
 public class Indexing {
 	
@@ -81,7 +84,66 @@ public class Indexing {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public ResultItem searchIndex(String inField, String queryString, int currentPageNum, int pageSize) {
+        try {
+            Query query = new QueryParser(inField, analyzer).parse(queryString);
 
+            IndexReader indexReader = DirectoryReader.open(memoryIndex);
+            IndexSearcher searcher = new IndexSearcher(indexReader);
+
+            // Calculate the starting index of the documents for the given page
+            int start = (currentPageNum - 1) * pageSize;
+
+            // Perform the search and retrieve documents from the specified page
+            TopDocs topDocs = searcher.search(query, start + pageSize);
+            ScoreDoc[] hits = topDocs.scoreDocs;
+
+            List<Document> documents = new ArrayList<>();
+            for (int i = start; i < Math.min(hits.length, start + pageSize); i++) {
+                Document doc = searcher.doc(hits[i].doc);
+                documents.add(doc);
+            }
+
+            // Convert TopDocs.totalHits to int
+            int totalNumOfResults = Math.toIntExact(topDocs.totalHits.value);
+            
+            // Calculate the number of pages
+            int totalNumOfPages = (int) Math.ceil((double) totalNumOfResults / pageSize);
+            
+            return new ResultItem(pageSize, currentPageNum, totalNumOfPages, totalNumOfResults, parseDocumentList(documents));
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    // Converts lucene's Document to our DocumentItem
+    public DocumentItem parseDocument(Document doc) {
+        // Extract field values from the Document object
+        String title = doc.get("title");
+        String content = doc.get("body");
+        String url = doc.get("url");
+
+        // Create a new DocumentItem object with the extracted values
+        DocumentItem documentItem = new DocumentItem();
+        documentItem.setTitle(title);
+        documentItem.setContent(content);
+        documentItem.setUrl(url);
+
+        return documentItem;
+    }
+    
+    public List<DocumentItem> parseDocumentList(List<Document> documents) {
+        List<DocumentItem> documentItems = new ArrayList<>();
+
+        // Loop through the list of Lucene Documents and parse each into DocumentItem
+        for (Document doc : documents) {
+            DocumentItem documentItem = parseDocument(doc);
+            documentItems.add(documentItem);
+        }
+        return documentItems;
     }
 
     public void deleteDocument(Term term) {
