@@ -19,16 +19,20 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.apache.lucene.search.*;
 
 import com.project.lucene.model.DocumentItem;
 import com.project.lucene.model.ResultItem;
@@ -93,16 +97,41 @@ public class Indexing {
     
     public ResultItem searchIndex(String inField, String queryString, int currentPageNum, int pageSize) {
         try {
+        	//------start of ranking algo testing
+        	
+        	// Step 1: Define the BM25 similarity model
+            Similarity bm25Similarity = new BM25Similarity();
+        	
+        	
+        	//------end of ranking algo testing
+        	
+            
+         // Step 3: Create queries for title and content
+            Query titleQuery = new QueryParser("title", analyzer).parse(queryString);
+            Query contentQuery = new QueryParser("content", analyzer).parse(queryString);
             Query query = new QueryParser(inField, analyzer).parse(queryString);
+            
+            //Query query = new QueryParser(inField, analyzer).parse(queryString);
 
+         // Step 4: Combine the queries with different weights
+            BooleanQuery.Builder combinedQuery = new BooleanQuery.Builder();
+            combinedQuery.add(new BoostQuery(titleQuery, 2.0f), BooleanClause.Occur.SHOULD); // Title with higher weight
+            combinedQuery.add(new BoostQuery(contentQuery, 1.0f), BooleanClause.Occur.SHOULD); // Content with lower weight
+            combinedQuery.add(new BoostQuery(query, 0.5f), BooleanClause.Occur.SHOULD); // Content with lower weight
+
+            
             IndexReader indexReader = DirectoryReader.open(memoryIndex);
             IndexSearcher searcher = new IndexSearcher(indexReader);
+            
+            //SET BM25 SIMILARITY
+            searcher.setSimilarity(bm25Similarity);
+            
 
             // Calculate the starting index of the documents for the given page
             int start = (currentPageNum - 1) * pageSize;
 
             // Perform the search and retrieve documents from the specified page
-            TopDocs topDocs = searcher.search(query, start + pageSize);
+            TopDocs topDocs = searcher.search(combinedQuery.build(), start + pageSize);
             ScoreDoc[] hits = topDocs.scoreDocs;
 
             List<Document> documents = new ArrayList<>();

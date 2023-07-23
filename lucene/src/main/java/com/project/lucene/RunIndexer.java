@@ -31,23 +31,23 @@ public class RunIndexer implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
-		String filePath = "../data_directory/data.json";
-		
-		indexJson(filePath);
-		
-		List<Document> testList = indexing.searchIndex("title", "information");
-		System.out.println("===================");
-		
-		for(Document item: testList) {
-			System.out.println(item.get("title"));
-		}
-		System.out.println("Multi here ===================");
-		
-		ResultItem testList2 = indexing.querySearchIndex("information", 1, 20);
-		
-		for(DocumentItem item: testList2.getDocuments()) {
-			System.out.println(item.title);
-		}
+//		String filePath = "../data_directory/data.json";
+//		
+//		indexJson(filePath);
+//		
+//		List<Document> testList = indexing.searchIndex("title", "information");
+//		System.out.println("===================");
+//		
+//		for(Document item: testList) {
+//			System.out.println(item.get("title"));
+//		}
+//		System.out.println("Multi here ===================");
+//		
+//		ResultItem testList2 = indexing.querySearchIndex("information", 1, 20);
+//		
+//		for(DocumentItem item: testList2.getDocuments()) {
+//			System.out.println(item.title);
+//		}
 		
 	}
 	
