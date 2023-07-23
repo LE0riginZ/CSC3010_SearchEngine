@@ -15,7 +15,7 @@
 
             <!-- Dropdown for number of results per page -->
             <label>Show results per page:</label>
-            <select v-model="resultsPerPage">
+            <select v-model="resultsPerPage" @change="changePageSize">
                 <option v-for="option in resultsPerPageOptions" :value="option" :key="option">
                     {{ option }}
                 </option>
@@ -31,7 +31,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="result in paginatedResults" :key="result.title" @click="handleRowClick(result.url)"
+                    <tr v-for="result in searchResults.documents" :key="result.title" @click="handleRowClick(result.url)"
                         class="clickable-row">
                         <td>{{ result.title }}</td>
                         <td>{{ truncateString(result.content, 280) }}</td>
@@ -59,7 +59,7 @@ const searchQuery = ref("");
 const searchResults = ref(null);
 const currentPage = ref(1);
 const resultsPerPage = ref(10);
-const resultsPerPageOptions = [5, 10, 25];
+const resultsPerPageOptions = [5, 10, 25, 50, 100];
 const activeRowUrl = ref(null);
 
 const paginatedResults = computed(() => {
@@ -82,9 +82,16 @@ const totalPages = computed(() => {
   return totalPagesNum.value;
 });
 
+function changePageSize() {
+  console.log(resultsPerPage.value)
+  search()
+}
+
 function search() {
   if (searchQuery.value.trim() === "") {
     apiUrl.value = `http://localhost:8080/search/page?searchTerm=${searchQuery.value}`;
+    searchQuery.value = ""
+    searchResults.value = null
   } else {
     apiUrl.value = `http://localhost:8080/search/page?searchTerm=${searchQuery.value}&pageNum=${currentPage.value}&pageSize=${resultsPerPage.value}`;
   }
@@ -115,6 +122,9 @@ function nextPage() {
 }
 
 function prevPage() {
+    console.log(currentPage.value)
+    console.log(totalPagesNum.value)
+
   if (currentPage.value > 1) {
     currentPage.value--;
     search();
