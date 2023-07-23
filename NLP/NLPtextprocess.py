@@ -3,6 +3,8 @@ import json
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 from collections import Counter
 import string
 
@@ -18,6 +20,10 @@ def process_text(text):
     stop_words = set(stopwords.words("english"))
     words = [word for word in words if word.isalpha() and word not in stop_words]
 
+    # Lemmatization
+    lemmatizer = WordNetLemmatizer()
+    words = [lemmatizer.lemmatize(word) for word in words]
+
     return words
 
 def remove_punctuations_and_symbols(word):
@@ -32,7 +38,7 @@ def clean_title(title):
 def main():
 
     # Data directory path
-    data_directory = 'C:/Users/Cheeyee/Desktop/Y3T3/3010/proj'  
+    data_directory = 'C:/Users/Cheeyee/Desktop/Y3T3/3010/proj/data_directory'  
 
     # Load data from data.json
     data_path = os.path.join(data_directory, 'data.json')
@@ -40,8 +46,8 @@ def main():
         data = json.load(file)
 
     # Create a folder to store text files
-    if not os.path.exists('processed_texts'):
-        os.makedirs('processed_texts')
+    if not os.path.exists('processed_texts2'):
+        os.makedirs('processed_texts2')
 
     # Process each item and create separate text files
     for item in data:
@@ -59,7 +65,7 @@ def main():
         cleaned_title = clean_title(title)
 
         # Create a text file with the cleaned title in the 'processed_texts' folder
-        with open(f'processed_texts/{cleaned_title}.txt', 'w', encoding='utf-8') as text_file:
+        with open(f'processed_texts2/{cleaned_title}.txt', 'w', encoding='utf-8') as text_file:
             # Save word: frequency on each line
             for word, freq in word_freq.items():
                 text_file.write(f'{word}: {freq}\n')
