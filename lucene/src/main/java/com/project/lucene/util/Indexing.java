@@ -1,11 +1,11 @@
 package com.project.lucene.util;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -16,11 +16,14 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BoostQuery;
+import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -32,7 +35,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.apache.lucene.search.*;
+
 
 import com.project.lucene.model.DocumentItem;
 import com.project.lucene.model.ResultItem;
@@ -42,6 +45,8 @@ public class Indexing {
 	
 	private Directory memoryIndex;
 	private StandardAnalyzer analyzer;
+	
+    private static final int MAX_RESULTS = 5; // Number of autocorrect suggestions to return
 	
 	public Indexing(@Qualifier("indexDirectory") Directory memoryIndex, StandardAnalyzer analyzer) {
         super();
@@ -100,8 +105,7 @@ public class Indexing {
         	//------start of ranking algo testing
         	
         	// Step 1: Define the BM25 similarity model
-            Similarity bm25Similarity = new BM25Similarity();
-        	
+            Similarity bm25Similarity = new BM25Similarity(1.5f, 0.75f);
         	
         	//------end of ranking algo testing
         	
@@ -110,8 +114,6 @@ public class Indexing {
             Query titleQuery = new QueryParser("title", analyzer).parse(queryString);
             Query contentQuery = new QueryParser("content", analyzer).parse(queryString);
             Query query = new QueryParser(inField, analyzer).parse(queryString);
-            
-            //Query query = new QueryParser(inField, analyzer).parse(queryString);
 
          // Step 4: Combine the queries with different weights
             BooleanQuery.Builder combinedQuery = new BooleanQuery.Builder();
@@ -121,25 +123,24 @@ public class Indexing {
 
             
             IndexReader indexReader = DirectoryReader.open(memoryIndex);
-            IndexSearcher searcher = new IndexSearcher(indexReader);
+            IndexSearcher titleSearcher = new IndexSearcher(indexReader);
             
             //SET BM25 SIMILARITY
-            searcher.setSimilarity(bm25Similarity);
-            
+            titleSearcher.setSimilarity(bm25Similarity); // 10results      
 
             // Calculate the starting index of the documents for the given page
             int start = (currentPageNum - 1) * pageSize;
 
             // Perform the search and retrieve documents from the specified page
-            TopDocs topDocs = searcher.search(combinedQuery.build(), start + pageSize);
+            TopDocs topDocs = titleSearcher.search(combinedQuery.build(), start + pageSize);
             ScoreDoc[] hits = topDocs.scoreDocs;
 
             List<Document> documents = new ArrayList<>();
             for (int i = start; i < Math.min(hits.length, start + pageSize); i++) {
-                Document doc = searcher.doc(hits[i].doc);
+                Document doc = titleSearcher.doc(hits[i].doc);
                 documents.add(doc);
             }
-
+            
             // Convert TopDocs.totalHits to int
             int totalNumOfResults = Math.toIntExact(topDocs.totalHits.value);
             
@@ -215,10 +216,14 @@ public class Indexing {
 //            }
             
             List<Document> documents = new ArrayList<>();
+            Set<Document> documentsSet = new HashSet<>();
+
             for (int i = start; i < Math.min(hits.length, start + pageSize); i++) {
                 Document doc = searcher.doc(hits[i].doc);
-                documents.add(doc);
+                documentsSet.add(doc);
             }
+
+            documents.addAll(documentsSet);
 
             // Convert TopDocs.totalHits to int
             int totalNumOfResults = Math.toIntExact(topDocs.totalHits.value);
@@ -235,20 +240,6 @@ public class Indexing {
         return null;
 
     }   
-    
-//    private Query applyTitleBoost(Query query, float titleBoost) {
-//        // Clone the original query to avoid modifying it directly
-//        Query clonedQuery = query.clone();
-//
-//        // Create a BooleanQuery with the original query as "SHOULD" clause and the title query as "MUST" clause
-//        BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
-//        booleanQuery.add(clonedQuery, BooleanClause.Occur.SHOULD); // Original query as SHOULD
-//        booleanQuery.add(new BoostQuery(clonedQuery, titleBoost), BooleanClause.Occur.MUST); // Title query as MUST with boost
-//
-//        return booleanQuery.build();
-
-    
-    
 
     public void deleteDocument(Term term) {
         try {
