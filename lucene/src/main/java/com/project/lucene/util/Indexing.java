@@ -2,8 +2,10 @@ package com.project.lucene.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -208,7 +210,7 @@ public class Indexing {
             searcher.setSimilarity(new BM25Similarity(k1, b));
             
 //           Perform the search and retrieve documents from the specified page
-            TopDocs topDocs = searcher.search(query, start + pageSize);
+            TopDocs topDocs = searcher.search(query, (start + pageSize)*50);
             ScoreDoc[] hits = topDocs.scoreDocs;
 //            List<Document> documents = new ArrayList<>();
 //            for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
@@ -216,14 +218,20 @@ public class Indexing {
 //            }
             
             List<Document> documents = new ArrayList<>();
-            Set<Document> documentsSet = new HashSet<>();
-
-            for (int i = start; i < Math.min(hits.length, start + pageSize); i++) {
+            Map<String, Document> uniqueDocuments = new HashMap<>();
+            
+//            uniqueDocuments.size()
+            
+//            for (int i = start; i < Math.min(hits.length, start + pageSize); i++) 
+            int i = start;
+            while(uniqueDocuments.size()< Math.min(hits.length,start + pageSize)){
                 Document doc = searcher.doc(hits[i].doc);
-                documentsSet.add(doc);
+                String url = doc.get("url");
+                uniqueDocuments.put(url, doc);
+                i++;
             }
 
-            documents.addAll(documentsSet);
+            documents.addAll(uniqueDocuments.values());
 
             // Convert TopDocs.totalHits to int
             int totalNumOfResults = Math.toIntExact(topDocs.totalHits.value);

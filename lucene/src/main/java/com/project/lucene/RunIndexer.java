@@ -61,10 +61,10 @@ public class RunIndexer implements CommandLineRunner{
      // Contains top ten links from Query
         List<String> querylinksList = new ArrayList<>();
         
-        String keyword = "Empires";
+        String keyword = "empires";
         // Empires, Retrieval
 //		
-		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 20);
+		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 10);
 		
 		for(DocumentItem item: queriedList.getDocuments()) {
 			querylinksList.add(item.url);
@@ -79,10 +79,8 @@ public class RunIndexer implements CommandLineRunner{
      //   File googleTopTenPath = new File("../google_topten");
 		String googleTopTwentyPath = "../google_toptwenty";
         
-		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, 20);
+		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, 10);
        
-        
-		
 	}
 	
     public static int containsAny(List<String> querylist, List<String> googlelinksList) {
