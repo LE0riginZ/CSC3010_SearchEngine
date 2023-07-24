@@ -3,18 +3,24 @@ package com.project.lucene;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
 
 import org.apache.lucene.document.Document;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.project.lucene.model.DocumentItem;
+import com.project.lucene.model.GoogleSearchItem;
 import com.project.lucene.model.ResultItem;
 import com.project.lucene.util.Indexing;
 import com.project.lucene.util.LuceneFileSearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,23 +48,113 @@ public class RunIndexer implements CommandLineRunner{
 		
 //        String filePath = "../data_directory/data.json";
 		
-		indexJson(directoryPath);
+//		indexJson(directoryPath);
 		
-		List<Document> testList = indexing.searchIndex("title", "information");
-		System.out.println("===================");
+//		List<Document> testList = indexing.searchIndex("title", "information");
+//		System.out.println("===================");
+//		
+//		for(Document item: testList) {
+//			System.out.println(item.get("title"));
+//		}
+//		System.out.println("Multi here ===================");
+        
+     // Contains top ten links from Query
+        List<String> querylinksList = new ArrayList<>();
+        
+        String keyword = "Retrieval";
+        // Empires, Retrieval
+//		
+		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 10);
 		
-		for(Document item: testList) {
-			System.out.println(item.get("title"));
+		for(DocumentItem item: queriedList.getDocuments()) {
+			querylinksList.add(item.url);
 		}
-		System.out.println("Multi here ===================");
-		
-		ResultItem testList2 = indexing.querySearchIndex("information", 1, 20);
-		
-		for(DocumentItem item: testList2.getDocuments()) {
-			System.out.println(item.title);
-		}
+//		
+//		for(DocumentItem item: testList2.getDocuments()) {
+//			System.out.println(item.title);
+//		}
+        
+        
+     // Get the directory where the CSV files are located.
+     //   File googleTopTenPath = new File("../google_topten");
+		String googleTopTenPath = "../google_toptwenty";
+        
+		compareGoogleQueryScores(googleTopTenPath, querylinksList ,keyword);
+       
+        
 		
 	}
+	
+    public static int containsAny(List<String> querylist, List<String> googlelinksList) {
+        int count = 0;
+        for (String element : querylist) {
+            if (googlelinksList.contains(element)) {
+                count++;
+            }else {
+            	System.out.println(element);
+            }
+        }
+        return count;
+    }
+    
+	// Function to read in JSON and index documents from the JSON
+	public void compareGoogleQueryScores(String directoryPath, List<String> queriedlinksList, String keyword) throws IOException {
+		// Create a File object for the directory
+        File directory = new File(directoryPath);
+             
+        String filePath = directoryPath + "/topten searches_" + keyword + ".json";
+        
+        // Contains top ten links from Google
+        List<String> googlelinksList = new ArrayList<>();
+        
+        // Read in JSON file as a list of documents
+   		List<GoogleSearchItem> topGoogleList = readJsonFileGoogleSearch(filePath);
+   		
+		for(GoogleSearchItem item: topGoogleList) {
+			googlelinksList.add(String.valueOf(item.url));
+//			writer.write(Integer.toString(count) + ". Indexed: " + item.title.toString() + "\n");
+		}
+		
+		int relevantRetrieved = containsAny(googlelinksList, queriedlinksList);
+		
+		System.out.println("=================================");
+		System.out.println("Number of similar urls: " + relevantRetrieved);
+		System.out.println("Google");
+		for(String url: googlelinksList) {
+			System.out.println(url);
+		}
+		System.out.println("=================================");
+		System.out.println("Query");
+		for(String url: queriedlinksList) {
+			System.out.println(url);
+		}
+			
+		System.out.println("================================="); 
+		
+		
+		
+		// Calculate precision
+		double precision = (double) relevantRetrieved / queriedlinksList.size();
+		
+		// Calculate recall
+		double recall = (double) relevantRetrieved / topGoogleList.size();
+		
+		// Calculate F1-score
+		double f1Score = 2 * (precision * recall) / (precision + recall);
+		
+		// Print the results
+		System.out.println("Precision: " + precision);
+		System.out.println("Recall: " + recall);
+		System.out.println("F1-Score: " + f1Score);
+		System.out.println("================================="); 
+     				
+     }
+            
+	
+	
+	
+	
+	
 	
 	// Method to read in JSON
 	public List<DocumentItem> readJsonFileAndParse(String filePath) throws IOException {
@@ -71,6 +167,21 @@ public class RunIndexer implements CommandLineRunner{
 
         return items;
     }
+	
+	
+	
+	// Method to read in JSON
+	public List<GoogleSearchItem> readJsonFileGoogleSearch(String filePath) throws IOException {
+        // Create an instance of ObjectMapper from Jackson
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // Read the JSON file and parse it into a List of ItemDTO objects
+        List<GoogleSearchItem> items = objectMapper.readValue(new File(filePath),
+                                                     objectMapper.getTypeFactory().constructCollectionType(List.class, GoogleSearchItem.class));
+
+        return items;
+    }
+	
 	
 	public static String removeUnicodeSymbols(String input) {
         // Regular expression pattern to match all Unicode symbols excluding +, ., and ?
@@ -118,9 +229,7 @@ public class RunIndexer implements CommandLineRunner{
                 
              // Read in JSON file as a list of documents
         		List<DocumentItem> documentsList = readJsonFileAndParse(filePath);
-        		System.out.println("Indexing started");
-        		
-        		
+        		System.out.println("Indexing started");    		
         		
 //        		Simple index
         		for(DocumentItem item: documentsList) {        			
@@ -133,47 +242,6 @@ public class RunIndexer implements CommandLineRunner{
             }
         }
 		
-		
-		
-//		Remove duplicates		
-//		for(DocumentItem item: documentsList) {
-//			
-//			System.out.println("From JSON: " + item.title);
-//			System.out.println("From JSON (removed symbols): " + removeUnicodeSymbols(item.title));
-//			
-//			try {
-//			List<Document> docList = indexing.searchIndex("title", removeUnicodeSymbols(item.title));
-//			}catch(Exception e) {
-//				System.out.println("From JSON: " + item.title);
-//			}
-//			
-//			
-//			if(docList.isEmpty()) {
-//				System.out.println("docList is null");
-//				indexing.indexDocument(removeUnicodeSymbols(item.title), item.content ,item.url);
-//				count++;
-//				System.out.println(Integer.toString(count) + ". Indexed: " + removeUnicodeSymbols(item.title));
-//				
-//				
-//			}else {
-//				System.out.println("docList is NOT null");
-//				for (Document doc: docList) {
-//					System.out.println("From query: " + doc.get("title"));
-//					if(doc.get("title").equals(removeUnicodeSymbols(item.title))) {
-//						System.out.println("Document has already been indexed");
-//						break;
-//						
-//						
-//					}else {
-//						indexing.indexDocument(removeUnicodeSymbols(item.title), item.content ,item.title);
-//						count++;
-//						System.out.println(Integer.toString(count) + ". Indexed: " + removeUnicodeSymbols(item.title));
-//						break;
-//						
-//					}
-//				}
-//			}
-//		}
         // Get the current date and time
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
