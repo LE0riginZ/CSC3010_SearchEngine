@@ -61,10 +61,10 @@ public class RunIndexer implements CommandLineRunner{
      // Contains top ten links from Query
         List<String> querylinksList = new ArrayList<>();
         
-        String keyword = "Retrieval";
+        String keyword = "Empires";
         // Empires, Retrieval
 //		
-		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 10);
+		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 20);
 		
 		for(DocumentItem item: queriedList.getDocuments()) {
 			querylinksList.add(item.url);
@@ -77,9 +77,9 @@ public class RunIndexer implements CommandLineRunner{
         
      // Get the directory where the CSV files are located.
      //   File googleTopTenPath = new File("../google_topten");
-		String googleTopTenPath = "../google_toptwenty";
+		String googleTopTwentyPath = "../google_toptwenty";
         
-		compareGoogleQueryScores(googleTopTenPath, querylinksList ,keyword);
+		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, 20);
        
         
 		
@@ -98,11 +98,11 @@ public class RunIndexer implements CommandLineRunner{
     }
     
 	// Function to read in JSON and index documents from the JSON
-	public void compareGoogleQueryScores(String directoryPath, List<String> queriedlinksList, String keyword) throws IOException {
+	public void compareGoogleQueryScores(String directoryPath, List<String> queriedlinksList, String keyword, int topNum) throws IOException {
 		// Create a File object for the directory
         File directory = new File(directoryPath);
              
-        String filePath = directoryPath + "/topten searches_" + keyword + ".json";
+        String filePath = directoryPath + "/topTwenty searches_" + keyword + ".json";
         
         // Contains top ten links from Google
         List<String> googlelinksList = new ArrayList<>();
@@ -110,8 +110,14 @@ public class RunIndexer implements CommandLineRunner{
         // Read in JSON file as a list of documents
    		List<GoogleSearchItem> topGoogleList = readJsonFileGoogleSearch(filePath);
    		
+   		int count = 0;
 		for(GoogleSearchItem item: topGoogleList) {
-			googlelinksList.add(String.valueOf(item.url));
+			if (count < topNum) {
+				googlelinksList.add(String.valueOf(item.url));
+				count++;
+			}
+			
+			
 //			writer.write(Integer.toString(count) + ". Indexed: " + item.title.toString() + "\n");
 		}
 		
