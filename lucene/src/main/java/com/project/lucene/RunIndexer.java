@@ -41,7 +41,7 @@ public class RunIndexer implements CommandLineRunner{
 	
 	@Override
 	public void run(String... args) throws Exception {
-		Benchmark.main(new String[] { "-config", "classpath:benchmark.xml" });
+//		Benchmark.main(new String[] { "-config", "classpath:benchmark.xml" });
 		// TODO Auto-generated method stub
 		
 		// Specify the directory path containing the files
@@ -49,39 +49,26 @@ public class RunIndexer implements CommandLineRunner{
 		
 //        String filePath = "../data_directory/data.json";
 		
-//		indexJson(directoryPath);
+//		indexJson(directoryPath); 
 		
-//		List<Document> testList = indexing.searchIndex("title", "information");
-//		System.out.println("===================");
-//		
-//		for(Document item: testList) {
-//			System.out.println(item.get("title"));
-//		}
-//		System.out.println("Multi here ===================");
+		System.out.println("==============================");
+ 
+        String keyword = "glasgow";
+        int searchCount = 20;
+		
+		ResultItem queriedList = indexing.newQuerysearchIndex(keyword, 1, searchCount);
+		
+		// Store Queried Link in querylinksList
+		List<String> querylinksList = new ArrayList<>();
+		for(DocumentItem item: queriedList.getDocuments()) {
+			querylinksList.add(item.url);
+		}
+
+		// Get the directory where the CSV files are located.
+		String googleTopTwentyPath = "../google_toptwenty";
         
-     // Contains top ten links from Query
-//        List<String> querylinksList = new ArrayList<>();
-//        
-//        String keyword = "empires";
-//        int searchCount = 10;
-//        // Empires, Retrieval
-////		
-//		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, searchCount);
-//		
-//		for(DocumentItem item: queriedList.getDocuments()) {
-//			querylinksList.add(item.url);
-//		}
-//		
-//		for(DocumentItem item: testList2.getDocuments()) {
-//			System.out.println(item.title);
-//		}
-        
-        
-     // Get the directory where the CSV files are located.
-     //   File googleTopTenPath = new File("../google_topten");
-//		String googleTopTwentyPath = "../google_toptwenty";
-//        
-//		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, searchCount);
+		// Run method to calculate scores
+		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, searchCount);
        
 	}
 	
