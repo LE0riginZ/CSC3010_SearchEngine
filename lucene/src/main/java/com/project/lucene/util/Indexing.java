@@ -303,6 +303,72 @@ public class Indexing {
     
     
     
+    // Method to use multiple fields in one query
+    public ResultItem newQuerySearchIndexDefault(String queryString, int currentPageNum, int pageSize) {
+        try {
+        	
+        	String[] searchFields = new String[]{"title", "body"};
+        	MultiFieldQueryParser queryParser = new MultiFieldQueryParser(searchFields, analyzer);
+            Query query = queryParser.parse(queryString);
+            
+            System.out.println(query);
+            
+            // Calculate the starting index of the documents for the given page
+            int start = (currentPageNum - 1) * pageSize;
+            
+//            Query titleQuery = new QueryParser("title", analyzer).parse(queryString);
+//            Query contentQuery = new QueryParser("content", analyzer).parse(queryString);
+            
+            
+         // Step 4: Combine the queries with different weights
+//            BooleanQuery.Builder combinedQuery = new BooleanQuery.Builder();
+//            combinedQuery.add(new BoostQuery(titleQuery, 2.0f), BooleanClause.Occur.SHOULD); // Title with higher weight
+//            combinedQuery.add(new BoostQuery(contentQuery, 1.0f), BooleanClause.Occur.SHOULD); // Content with lower weight
+//            combinedQuery.add(new BoostQuery(query, 0.5f), BooleanClause.Occur.SHOULD); // Content with lower weight
+            
+            IndexReader indexReader = DirectoryReader.open(memoryIndex);
+            IndexSearcher searcher = new IndexSearcher(indexReader);
+            
+//            float k1 = 1.5f;
+//            float b = 0.75f;
+//            
+//            searcher.setSimilarity(new BM25Similarity(k1, b));
+            
+//           Perform the search and retrieve documents from the specified page
+            TopDocs topDocs = searcher.search(query, (start + pageSize)*50);
+            ScoreDoc[] hits = topDocs.scoreDocs;
+            
+            List<Document> documents = new ArrayList<>();
+            Map<String, Document> uniqueDocuments = new HashMap<>();
+            
+            int i = start;
+            while(uniqueDocuments.size()< Math.min(hits.length,start + pageSize)){
+                Document doc = searcher.doc(hits[i].doc);
+                String url = doc.get("url");
+                uniqueDocuments.put(url, doc);
+                i++;
+            }
+
+            documents.addAll(uniqueDocuments.values());
+
+            // Convert TopDocs.totalHits to int
+            int totalNumOfResults = Math.toIntExact(topDocs.totalHits.value);
+            
+            // Calculate the number of pages
+            int totalNumOfPages = (int) Math.ceil((double) totalNumOfResults / pageSize);
+            
+            return new ResultItem(pageSize, currentPageNum, totalNumOfPages, totalNumOfResults, parseDocumentList(documents));
+
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }   
+    
+    
+    
 
     public void deleteDocument(Term term) {
         try {

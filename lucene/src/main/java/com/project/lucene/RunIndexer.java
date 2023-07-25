@@ -45,8 +45,8 @@ public class RunIndexer implements CommandLineRunner{
 		
 		System.out.println("==============================");
  
-        String keyword = "glasgow";
-        int searchCount = 20;
+        String keyword = "empires";
+        int searchCount = 5;
 		
 		ResultItem queriedList = indexing.newQuerySearchIndex(keyword, 1, searchCount);
 		
