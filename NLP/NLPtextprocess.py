@@ -38,7 +38,7 @@ def clean_title(title):
 def main():
 
     # Data directory path
-    data_directory = 'C:/Users/Cheeyee/Desktop/Y3T3/3010/proj/data_directory'  
+    data_directory = '../data_directory'  
 
     # Load data from data.json
     data_path = os.path.join(data_directory, 'data.json')

@@ -5,8 +5,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
 # Uncomment and run if first time
-#nltk.download('wordnet')
-#nltk.download("punkt")
+# nltk.download('wordnet')
+# nltk.download("punkt")
 # nltk.download("stopwords")
 
 def lemmatize_content(text):

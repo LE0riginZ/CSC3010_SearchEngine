@@ -3,14 +3,10 @@ package com.project.lucene;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.lucene.benchmark.byTask.Benchmark;
-import org.apache.lucene.document.Document;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +14,8 @@ import com.project.lucene.model.DocumentItem;
 import com.project.lucene.model.GoogleSearchItem;
 import com.project.lucene.model.ResultItem;
 import com.project.lucene.util.Indexing;
-import com.project.lucene.util.LuceneFileSearch;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -37,7 +30,6 @@ public class RunIndexer implements CommandLineRunner{
 	// without user prompt
 	
 	private Indexing indexing;
-	private LuceneFileSearch luceneFileSearch;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -56,7 +48,7 @@ public class RunIndexer implements CommandLineRunner{
         String keyword = "glasgow";
         int searchCount = 20;
 		
-		ResultItem queriedList = indexing.newQuerysearchIndex(keyword, 1, searchCount);
+		ResultItem queriedList = indexing.newQuerySearchIndex(keyword, 1, searchCount);
 		
 		// Store Queried Link in querylinksList
 		List<String> querylinksList = new ArrayList<>();
@@ -86,8 +78,7 @@ public class RunIndexer implements CommandLineRunner{
     
 	// Function to read in JSON and index documents from the JSON
 	public void compareGoogleQueryScores(String directoryPath, List<String> queriedlinksList, String keyword, int topNum) throws IOException {
-		// Create a File object for the directory
-        File directory = new File(directoryPath);
+		new File(directoryPath);
              
         String filePath = directoryPath + "/topTwenty searches_" + keyword + ".json";
         
