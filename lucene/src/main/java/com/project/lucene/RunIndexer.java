@@ -25,29 +25,24 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class RunIndexer implements CommandLineRunner{
 	
-	// Your main functions put here for those
-	// functions you want to run upon running the project
-	// without user prompt
-	
 	private Indexing indexing;
 	
 	@Override
 	public void run(String... args) throws Exception {
 		
-		/**
-		 *  Uncomment this portion to perform indexing
-		 */
-		// Specify the directory path containing the files
-//      String directoryPath = "../data_directory";
-//      String filePath = "../data_directory/data.json";
+//		/**
+//		 *  Uncomment this portion to perform indexing
+//		 */
+//		// Specify the directory path containing the files
+//        String directoryPath = "../data_directory";
 //		indexJson(directoryPath); 
-		
-		System.out.println("==============================");
- 
-		
-		/**
-		 *  Uncomment this portion to perform benchmarking
-		 */
+//		
+//		System.out.println("==============================");
+// 
+//		
+//		/**
+//		 *  Uncomment this portion to perform benchmarking
+//		 */
 //        String keyword = "empires";
 //        int searchCount = 5;
 //		

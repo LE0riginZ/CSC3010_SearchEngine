@@ -43,7 +43,7 @@
 
         </div>
         <div v-else>
-            <p>Search away :D</p>
+            <p>Enter a term to search!</p>
         </div>
     </div>
 </template>
