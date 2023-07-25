@@ -1,0 +1,36 @@
+<benchmark>
+  <index>
+    <docs>300875</docs>
+    <fields>
+      <field name="text" type="text" />
+    </fields>
+  </index>
+  <queries>
+    <query>
+      <text>lucene benchmark</text>
+    </query>
+    <query>
+      <text>apache lucene</text>
+    </query>
+    <query>
+      <text>search engine</text>
+    </query>
+    <query>
+      <text>full text search</text>
+    </query>
+    <query>
+      <text>document retrieval</text>
+    </query>
+  </queries>
+  <metrics>
+    <precision>
+      <top>5</top>
+    </precision>
+    <recall>
+      <top>5</top>
+    </recall>
+    <f1>
+      <top>5</top>
+    </f1>
+  </metrics>
+</benchmark>

@@ -9,7 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
+import org.apache.lucene.benchmark.byTask.Benchmark;
 import org.apache.lucene.document.Document;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -41,10 +41,11 @@ public class RunIndexer implements CommandLineRunner{
 	
 	@Override
 	public void run(String... args) throws Exception {
+		Benchmark.main(new String[] { "-config", "classpath:benchmark.xml" });
 		// TODO Auto-generated method stub
 		
 		// Specify the directory path containing the files
-        String directoryPath = "../data_directory";
+//        String directoryPath = "../data_directory";
 		
 //        String filePath = "../data_directory/data.json";
 		
@@ -59,16 +60,17 @@ public class RunIndexer implements CommandLineRunner{
 //		System.out.println("Multi here ===================");
         
      // Contains top ten links from Query
-        List<String> querylinksList = new ArrayList<>();
-        
-        String keyword = "empires";
-        // Empires, Retrieval
+//        List<String> querylinksList = new ArrayList<>();
+//        
+//        String keyword = "empires";
+//        int searchCount = 10;
+//        // Empires, Retrieval
+////		
+//		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, searchCount);
 //		
-		ResultItem queriedList = indexing.querySearchIndex(keyword, 1, 10);
-		
-		for(DocumentItem item: queriedList.getDocuments()) {
-			querylinksList.add(item.url);
-		}
+//		for(DocumentItem item: queriedList.getDocuments()) {
+//			querylinksList.add(item.url);
+//		}
 //		
 //		for(DocumentItem item: testList2.getDocuments()) {
 //			System.out.println(item.title);
@@ -77,9 +79,9 @@ public class RunIndexer implements CommandLineRunner{
         
      // Get the directory where the CSV files are located.
      //   File googleTopTenPath = new File("../google_topten");
-		String googleTopTwentyPath = "../google_toptwenty";
-        
-		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, 10);
+//		String googleTopTwentyPath = "../google_toptwenty";
+//        
+//		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, searchCount);
        
 	}
 	
@@ -113,9 +115,7 @@ public class RunIndexer implements CommandLineRunner{
 			if (count < topNum) {
 				googlelinksList.add(String.valueOf(item.url));
 				count++;
-			}
-			
-			
+			}		
 //			writer.write(Integer.toString(count) + ". Indexed: " + item.title.toString() + "\n");
 		}
 		
@@ -142,6 +142,7 @@ public class RunIndexer implements CommandLineRunner{
 		
 		// Calculate recall
 		double recall = (double) relevantRetrieved / topGoogleList.size();
+		System.out.println("Google list size: " + topGoogleList.size());
 		
 		// Calculate F1-score
 		double f1Score = 2 * (precision * recall) / (precision + recall);
