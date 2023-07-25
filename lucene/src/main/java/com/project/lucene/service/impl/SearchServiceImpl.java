@@ -28,7 +28,7 @@ public class SearchServiceImpl implements SearchService {
 	    // Encode the sanitized searchTerm to prevent XSS vulnerabilities
 	    String encodedSearchTerm = Encode.forHtml(sanitizedSearchTerm);
 		
-        return indexing.searchIndex("body", encodedSearchTerm, pageNum, pageSize);
+        return indexing.newQuerySearchIndex(encodedSearchTerm, pageNum, pageSize);
 	}
 	
 	// Helper method to remove unwanted characters from the searchTerm

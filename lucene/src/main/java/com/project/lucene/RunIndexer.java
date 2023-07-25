@@ -33,34 +33,37 @@ public class RunIndexer implements CommandLineRunner{
 	
 	@Override
 	public void run(String... args) throws Exception {
-//		Benchmark.main(new String[] { "-config", "classpath:benchmark.xml" });
-		// TODO Auto-generated method stub
 		
+		/**
+		 *  Uncomment this portion to perform indexing
+		 */
 		// Specify the directory path containing the files
-//        String directoryPath = "../data_directory";
-		
-//        String filePath = "../data_directory/data.json";
-		
+//      String directoryPath = "../data_directory";
+//      String filePath = "../data_directory/data.json";
 //		indexJson(directoryPath); 
 		
 		System.out.println("==============================");
  
-        String keyword = "empires";
-        int searchCount = 5;
 		
-		ResultItem queriedList = indexing.newQuerySearchIndex(keyword, 1, searchCount);
-		
-		// Store Queried Link in querylinksList
-		List<String> querylinksList = new ArrayList<>();
-		for(DocumentItem item: queriedList.getDocuments()) {
-			querylinksList.add(item.url);
-		}
-
-		// Get the directory where the CSV files are located.
-		String googleTopTwentyPath = "../google_toptwenty";
-        
-		// Run method to calculate scores
-		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, searchCount);
+		/**
+		 *  Uncomment this portion to perform benchmarking
+		 */
+//        String keyword = "empires";
+//        int searchCount = 5;
+//		
+//		ResultItem queriedList = indexing.newQuerySearchIndex(keyword, 1, searchCount);
+//		
+//		// Store Queried Link in querylinksList
+//		List<String> querylinksList = new ArrayList<>();
+//		for(DocumentItem item: queriedList.getDocuments()) {
+//			querylinksList.add(item.url);
+//		}
+//
+//		// Get the directory where the CSV files are located.
+//		String googleTopTwentyPath = "../google_toptwenty";
+//        
+//		// Run method to calculate scores
+//		compareGoogleQueryScores(googleTopTwentyPath, querylinksList ,keyword, searchCount);
        
 	}
 	
@@ -94,7 +97,6 @@ public class RunIndexer implements CommandLineRunner{
 				googlelinksList.add(String.valueOf(item.url));
 				count++;
 			}		
-//			writer.write(Integer.toString(count) + ". Indexed: " + item.title.toString() + "\n");
 		}
 		
 		int relevantRetrieved = containsAny(googlelinksList, queriedlinksList);
@@ -112,8 +114,6 @@ public class RunIndexer implements CommandLineRunner{
 		}
 			
 		System.out.println("================================="); 
-		
-		
 		
 		// Calculate precision
 		double precision = (double) relevantRetrieved / queriedlinksList.size();
