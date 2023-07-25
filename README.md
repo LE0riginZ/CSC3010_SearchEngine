@@ -1,4 +1,4 @@
-# CSC3010_SearchEngine
+# CSC3010_Group01_SearchEngine
 Group 1 Repo for Info Retrieval Search Engine project using Apache Lucene
 
 ## Lucene tied with Spring Boot Project (9.7.0)
