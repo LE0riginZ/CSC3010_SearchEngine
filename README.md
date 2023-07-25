@@ -13,7 +13,7 @@ Files for (Indexing and Searching Functionalities):
 
 **data_directory**: Contains JSONs containing documents crawled from www.encyclopedia.com 
 
-**index_directory**: Contains index files, indexed by Lucene
+**index_directory (currently empty so not included)**: Contains index files, indexed by Lucene
 
 **google_toptwenty**: Contains Google_TopTwenty_Crawler.py and the JSONs with top twenty Google searches for specific keywords
 
