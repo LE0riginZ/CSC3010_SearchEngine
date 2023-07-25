@@ -26,16 +26,21 @@ Files for (Indexing and Searching Functionalities):
 ## Things required
 
 1. Crawled data from www.encyclopedia.com to be stored in data_directory
-2. System Requirements: JAVA 11 or higher 
-
-
+2. System Requirements: JAVA 17 or higher 
 
 ### Instructions
 1. Indexing
    - Call indexJson(directoryPath) method to index files from specified directory
   
-2. Run Frontend
-   - Abadi help to put instructions
+2. Run Backend
+   - Open command line terminal at base java directory
+   - Type in "mvn clean install" followed by "mvn spring-boot:run"
+  
+3. Run Frontend
+   - Open command line terminal at "vue-frontend\lucene_search_project"
+   - Type in "npm install" then "npm run dev"
+   - Follow the link given to go to the GUI page
+
 
 
 
